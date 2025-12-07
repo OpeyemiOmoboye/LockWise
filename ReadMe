@@ -1,0 +1,33 @@
+LockWise is a bluetooth home alarm system that sends real time updates to allow you to preserve the integrity of your home.  This alarm system uses numerous events,states and tasks to give the user in depth detail about their home. 
+
+Here are the states that the project uses:
+
+LOCKED_STATE - The default state, this represents when the door is both closed and locked and the servo will be in the locked position
+
+UNLOCKED_STATE-  in this state the door is still closed but it is unlocked meaning the servo is in it's unlocked position
+
+DOOR_OPEN_STATE -  in this state the door  has been opened and is unlocked
+
+DOOR_CLOSED_STATE - In this state the door has just been closed while it is similar to the unlocked state it does not involve any servo movement  to get into the state
+
+In order to recognize what is happening in and outside of your home 
+
+Here are the events that the project uses:
+
+EVENT_INSIDE_MOTION -  this event is triggered when the inside PIR  senses motion
+EVENT_OUTSIDE_MOTION -  this event is triggered when the outside PIR since his motion
+EVENT_DOOR_OPEN - This event is triggered when the door is open which means the reed sensor has been separated
+EVENT_DOOR_CLOSED -  this event triggered when the door is closed meaning the reed sensors two parts have been brought back together
+EVENT_LOCK_TIMER_EXPIRES - This event is triggered  when one of the timers ends, this project uses two timers
+
+Here are the tasks that the project uses:
+There is a sensors task  which controls are three sensors and based on the state of the sensor sends events to the queue
+ There is a state machine task which switches between the four different states based on the events it pops from the queue. this task also calls the servoRotate and sendMessage Methods which allows for proper unlocking locking with the servo motor and for sending messages about the state of our project over Bluetooth 
+
+How project works
+The project starts in the LOCKED state with the servo in its locked position at 0 degrees. Once the inside PIR senses motion it sends EVENT_INSIDE_MOTION  to the queue  and the state switches from LOCKED to UNLOCKED and the servo moves into the unlocked position at 90 degrees. If the door remains unlocked with the door not being opened after a certain amount of time the door will automatically lock going back into the LOCKED state and the servo will go back into the locked position of 0 degrees. Else if the door is opened because of the distance between the two parts of the magnetic reed sensor the internal switch will disconnect and send EVENT_DOOR_OPEN to the queue  which will move the system into the DOOR_OPEN_STATE. If the door is left opened for some time this system will send bluetooth messages telling the user the door is still open. 
+
+
+In order to interact with the project connect the ESP 32 with power in order to power components and  to allow bluetooth messages. Each component is connected to an LED on the breadboard to allow you to do integrity checks on your hardware components. The LEDs are also used to indicate the state of each sensor. This is a failsafe in the case that our bluetooth messaging fails. 
+
+For any troubleshooting please reach out to the owners of the github repo!
