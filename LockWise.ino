@@ -1,4 +1,3 @@
-//we will use the pushbutton as a standin for the mc-38
 #include <Arduino.h>
 #include <Timers.h>
 #include <ESP32Servo.h>
@@ -117,6 +116,7 @@ struct Sensor{
   bool lastStable, lastRead;
   uint32_t lastChange, lastFire;
 };
+
 Sensor door_reed = {REED_PIN, HIGH, HIGH, 0, 0};
 Sensor inside_pir = {INSIDE_PIR_PIN, LOW, LOW, 0, 0};
 Sensor outside_pir = {OUTSIDE_PIR_PIN, LOW, LOW, 0, 0};
@@ -172,12 +172,9 @@ void setup() {
   Serial.println("LOCKED");
   SerialBT.println("LOCKED");
 
-
   servo.setPeriodHertz(50);
   servo.attach(servoPin, 500, 2400);
   servo.write(0);
-
-  
 
   //object creations
   xEventQueue = xQueueCreate(10, sizeof(system_event_t));
@@ -185,12 +182,9 @@ void setup() {
   //timer creation
   xDoorClosedStateTimer = xTimerCreate("Closed State Timer", pdMS_TO_TICKS(door_timer_closed_state), pdFALSE, NULL, timercallback);
   xDoorOtherStatesTimer = xTimerCreate("Other State Timer", pdMS_TO_TICKS(door_timer_open_unlocked_states), pdFALSE, NULL, timercallback);
-  //pin
+  //tasks creation
   xTaskCreatePinnedToCore(stateMachineTask, "State Machine", 4096, NULL, 1, NULL, 1);
   xTaskCreatePinnedToCore(sensorReadTask, "Sensors", 4096, NULL, 1, NULL, 1);
 }
 
-void loop() {
-
-}
-
+void loop() {}
